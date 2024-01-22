@@ -1,0 +1,31 @@
+name: pr_check
+concurrency:
+  # ensure only one instance of this workflow is running at a time for a given PR
+  group: ${{ github.workflow }}-${{ github.event.number}}
+  cancel-in-progress: true
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited # re-trigger to update based on the edits on descriptions
+      # we recommend against auto merge without approval
+      - auto_merge_enabled
+      - auto_merge_disabled
+      - ready_for_review # need this as we will skip the test on draft PRs to save cost.
+
+env:
+  TMP_FOLDER: /tmp/commenter_info_tmp
+  # Only run PrCheckTask here.
+  TASKS: PrCheckTask
+
+jobs:
+  analyze:
+    name: PR comment
+    if: ${{ github.event.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo A comment on PR 
