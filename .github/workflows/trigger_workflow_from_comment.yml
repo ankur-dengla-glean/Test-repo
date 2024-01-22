@@ -5,12 +5,26 @@ on:
       - created
 
 jobs:
-  pr_commented:
-    # This job only runs for pull request comments
-    name: PR comment
-    if: ${{ github.event.issue_comment.issue.pull_request }}
+  trigger_workflow:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo A comment on PR ${NUMBER}
-        env:
-          NUMBER: ${{ github.event.issue.number }}
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Trigger PR Check Workflow
+        run: |
+          if [[ ${{ github.event_name }} == 'issue_comment' && ${{ github.event.issue.pull_request }} ]]; then
+            # Check if the comment contains a specific trigger phrase
+            if [[ $(echo "${{ github.event.comment.body }}" | grep -E 'trigger-pr-check') ]]; then
+              echo "Triggering the PR Check workflow..."
+              # Trigger the PR Check workflow using repository_dispatch event
+              curl -XPOST -u ${{ secrets.GITHUB_TOKEN }} -H "Accept: application/vnd.github.everest-preview+json" \
+                "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+                -d '{"event_type": "pr_check"}'
+            else
+              echo "Comment does not contain the trigger phrase. Skipping the workflow trigger."
+            fi
+          else
+            echo "Not a pull request comment. Skipping the workflow trigger."
+          fi
