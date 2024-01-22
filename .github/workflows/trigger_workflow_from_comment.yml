@@ -16,9 +16,11 @@ jobs:
         run: |
           if [[ ${{ github.event_name }} == 'issue_comment' && ${{ github.event.issue.pull_request }} ]]; then
             # Check if the comment contains a specific trigger phrase
-            if [[ $(echo "${{ github.event.comment.body }}" | grep -E 'trigger-pr-check') ]]; then
+            if [[ $(echo "${{ github.event.comment.body }}" | grep -E '\trigger-pr-check') ]]; then
               echo "Triggering the PR Check workflow..."
               # Trigger the PR Check workflow using repository_dispatch event
+              echo "${{ secrets.GITHUB_TOKEN }}"
+              echo "${{ github.repository }}"
               curl -XPOST -u ${{ secrets.GITHUB_TOKEN }} -H "Accept: application/vnd.github.everest-preview+json" \
                 "https://api.github.com/repos/${{ github.repository }}/dispatches" \
                 -d '{"event_type": "pr_check"}'
