@@ -28,7 +28,6 @@ env:
 jobs:
   analyze:
     name: PR comment
-    if: ${{ github.event.pull_request }}
     runs-on: ubuntu-latest
     steps:
       - run: echo A comment on PR 
