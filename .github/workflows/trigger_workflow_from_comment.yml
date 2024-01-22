@@ -6,6 +6,9 @@ on:
 
 jobs:
   trigger_workflow:
+    permissions:
+      actions: write
+      checks: write
     runs-on: ubuntu-latest
 
     steps:
