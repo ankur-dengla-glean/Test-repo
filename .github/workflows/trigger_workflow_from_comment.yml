@@ -16,8 +16,10 @@ jobs:
       - name: Trigger PR Check Workflow
         run: |
           echo "${{ github.event_path }}"
-          echo "${{ github.event.issue.pull_request }}"
+          echo "${{ github.event.issue.pull_request.head_ref}}"
+          echo "${{ github.event.issue.pull_request.ref}}"
           echo "${{ github.event.issue.number }}"
+          echo "${{ github.sha }}"
           # if [[ ${{ github.event_name }} == 'issue_comment' && ${{ github.event.issue.pull_request }} ]]; then
           #   # Check if the comment contains a specific trigger phrase
           #   if [[ $(echo "${{ github.event.comment.body }}" | grep -E '\trigger-pr-check') ]]; then
