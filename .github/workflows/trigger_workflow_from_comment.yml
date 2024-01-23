@@ -10,6 +10,7 @@ jobs:
       actions: write
       checks: write
       contents: write
+      pull-requests: read
     runs-on: ubuntu-latest
 
     steps:
