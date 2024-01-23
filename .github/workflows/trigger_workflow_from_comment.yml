@@ -23,7 +23,7 @@ jobs:
             if [[ $(echo "${{ github.event.comment.body }}" | grep -E '\trigger-pr-check') ]]; then
               echo "Triggering the PR Check workflow..."
               # Trigger the PR Check workflow using repository_dispatch event
-              echo "${{ github.event.issue.pull_request }}"
+              echo "${{ github.event.issue.pull_request.merged_at }}"
               curl -L \
                 -X POST \
                 -H "Accept: application/vnd.github+json" \
