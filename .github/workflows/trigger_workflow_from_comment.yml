@@ -11,15 +11,17 @@ jobs:
       checks: write
       contents: write
       pull-requests: read
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '\trigger-pr-check' }};
     runs-on: ubuntu-latest
 
     steps:
       - name: Get PR Details
         id: get-pr-details
         run: | 
-          PR_HEAD_BRANCH=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          PR_HEAD_BRANCH=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}" \
-            | jq -r .head.ref)
+            |jq -r .head.ref)
 
           echo "pr_head=${PR_HEAD_BRANCH}" >> $GITHUB_OUTPUT
 
@@ -30,7 +32,6 @@ jobs:
             if [[ $(echo "${{ github.event.comment.body }}" | grep -E '\trigger-pr-check') ]]; then
               echo "Triggering the PR Check workflow..."
               # Trigger the PR Check workflow using repository_dispatch event
-              echo "${{ github.head_ref }}"
               curl -L \
                 -X POST \
                 -H "Accept: application/vnd.github+json" \
