@@ -11,7 +11,7 @@ jobs:
       checks: write
       contents: write
       pull-requests: read
-    if: ${{ github.event.issue.pull_request && github.event.comment.body == '\trigger-pr-check' }};
+    if: github.event.issue.pull_request && github.event.comment.body == '\trigger-pr-check'
     runs-on: ubuntu-latest
 
     steps:
