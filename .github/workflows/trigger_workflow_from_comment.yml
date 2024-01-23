@@ -14,6 +14,7 @@ jobs:
 
     steps:
       - name: Get PR Details
+        id: get-pr-details
         run: | 
           PR_NUMBER=${{ github.event.issue.number }}
           PR_HEAD_BRANCH=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
@@ -24,7 +25,7 @@ jobs:
 
       - name: Use PR Base Branch
         run: |
-          echo "The base branch of the PR is ${{ steps.pr-info.outputs.pr_head }}"
+          echo "The base branch of the PR is ${{ steps.get-pr-details.outputs.pr_head }}"
           
       - name: Trigger PR Check Workflow
         run: |
