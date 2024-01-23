@@ -17,9 +17,10 @@ jobs:
       - name: Get PR Details
         id: get-pr-details
         run: | 
-          curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          PR_HEAD_BRANCH=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}" \
-            
+            | jq -r .head.ref)
+
           echo ${PR_HEAD_BRANCH}   
           echo "pr_head=${PR_HEAD_BRANCH}"
           echo "pr_head=${PR_HEAD_BRANCH}" >> $GITHUB_OUTPUT
