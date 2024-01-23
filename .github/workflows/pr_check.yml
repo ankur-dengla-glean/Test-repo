@@ -4,6 +4,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.number}}
   cancel-in-progress: true
 on:
+  workflow_dispatch:
   repository_dispatch:
     types:  
       - pr_check
