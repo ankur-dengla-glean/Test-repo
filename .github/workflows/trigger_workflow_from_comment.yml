@@ -21,32 +21,26 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}" \
             | jq -r .head.ref)
 
-          echo ${PR_HEAD_BRANCH}   
-          echo "pr_head=${PR_HEAD_BRANCH}"
           echo "pr_head=${PR_HEAD_BRANCH}" >> $GITHUB_OUTPUT
 
-      - name: Use PR Base Branch
-        run: |
-          echo "The base branch of the PR is ${{ steps.get-pr-details.outputs.pr_head }}"
-          
       - name: Trigger PR Check Workflow
         run: |
-          # if [[ ${{ github.event_name }} == 'issue_comment' && ${{ github.event.issue.pull_request }} ]]; then
-          #   # Check if the comment contains a specific trigger phrase
-          #   if [[ $(echo "${{ github.event.comment.body }}" | grep -E '\trigger-pr-check') ]]; then
-          #     echo "Triggering the PR Check workflow..."
-          #     # Trigger the PR Check workflow using repository_dispatch event
-          #     echo "${{ github.head_ref }}"
-          #     curl -L \
-          #       -X POST \
-          #       -H "Accept: application/vnd.github+json" \
-          #       -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          #       -H "X-GitHub-Api-Version: 2022-11-28" \
-          #       https://api.github.com/repos/${{ github.repository }}/actions/workflows/pr_check.yml/dispatches \
-          #       -d '{"ref":"${{ github.head_ref }}"}'
-          #   else
-          #     echo "Comment does not contain the trigger phrase. Skipping the workflow trigger."
-          #   fi
-          # else
-          #   echo "Not a pull request comment. Skipping the workflow trigger."
-          # fi
+          if [[ ${{ github.event_name }} == 'issue_comment' && ${{ github.event.issue.pull_request }} ]]; then
+            # Check if the comment contains a specific trigger phrase
+            if [[ $(echo "${{ github.event.comment.body }}" | grep -E '\trigger-pr-check') ]]; then
+              echo "Triggering the PR Check workflow..."
+              # Trigger the PR Check workflow using repository_dispatch event
+              echo "${{ github.head_ref }}"
+              curl -L \
+                -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                https://api.github.com/repos/${{ github.repository }}/actions/workflows/pr_check.yml/dispatches \
+                -d '{"ref":"${{ steps.get-pr-details.outputs.pr_head }}"}'
+            else
+              echo "Comment does not contain the trigger phrase. Skipping the workflow trigger."
+            fi
+          else
+            echo "Not a pull request comment. Skipping the workflow trigger."
+          fi
