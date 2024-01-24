@@ -11,24 +11,24 @@ jobs:
       checks: write
       contents: write
       pull-requests: read
-    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/trigger-pr-check')
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/trigger-workflow')
     runs-on: ubuntu-latest
     steps:
       - name: Get Workflow Details from issue_comment
         id: get-workflow-details
         run: |
-          input_str="${{ github.event.comment.body }}" 
+          input_str="/trigger_workflow pr_check --arg1 2323 --arg2 23232323" 
+          command_name="/trigger_workflow"
 
           # Remove the leading ‘\trigger-workflow ’
-          args=${input_str#* }
-          workflow_name=${args%% *}
-          args=${args#* }
+          command_params=${input_str#$command_name}
+          IFS=' ' read -ra args <<< $command_params
 
+          workflow_name=${args[0]}
           echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
 
-          # Split the remaining arguments
-          for arg in $args; do
-              echo $arg
+          for ((i = 1; i < ${#args[@]}; i++)); do
+              arg=${args[i]}
               if [[ $arg == --* ]]; then
                   key=${arg#--}
               else
