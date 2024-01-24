@@ -4,6 +4,10 @@ on:
     types:
       - created
 
+env:
+  TRIGGER_COMMAND: "/trigger-workflow"
+  ALLOWED_WORKFLOWS: "pr_check"
+
 jobs:
   trigger_workflow:
     permissions:
@@ -18,14 +22,18 @@ jobs:
         id: get-workflow-details
         run: |
           input_str="${{ github.event.comment.body }}"
-          command_name="/trigger-workflow"
 
-          # Remove the leading ‘\trigger-workflow ’
-          command_params=${input_str#$command_name}
+          # Remove the leading TRIGGER_COMMAND
+          command_params=${input_str#$TRIGGER_COMMAND}
           IFS=' ' read -ra args <<< $command_params
 
           workflow_name=${args[0]}
           echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
+
+          # Check if the workflow is allowed to be triggered
+          IFS=',' read -ra MY_ARRAY_VALUES <<< "$ALLOWED_WORKFLOWS"
+
+          echo "${{contains($ALLOWED_WORKFLOWS, $workflow_name)}}"
 
           for ((i = 1; i < ${#args[@]}; i++)); do
               arg=${args[i]}
