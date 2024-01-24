@@ -32,7 +32,7 @@ jobs:
 
           # Check if the workflow is allowed to be triggered
           echo $ALLOWED_WORKFLOWS
-          # echo "${{contains(fromJson(ALLOWED_WORKFLOWS), workflow_name)}}"
+          
 
           for ((i = 1; i < ${#args[@]}; i++)); do
               arg=${args[i]}
