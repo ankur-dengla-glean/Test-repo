@@ -1,8 +1,10 @@
-input_str="/trigger_workflow pr_check --arg1 2323 --arg2 23232323" 
-command_name="/trigger_workflow"
+input_str="/trigger-workflow pr_check" 
+command_name="/trigger-workflow"
 
 # Remove the leading ‘\trigger-workflow ’
 command_params=${input_str#$command_name}
+echo $command_params
+
 IFS=' ' read -ra args <<< $command_params
 
 workflow_name=${args[0]}
