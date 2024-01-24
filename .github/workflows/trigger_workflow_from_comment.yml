@@ -29,7 +29,7 @@ jobs:
           echo $input_str
 
           # Trim leading and trailing spaces, tabs, and newlines
-          input_str="$(echo -e "${input_str}" | sed -e 's/^[ \t\n]*//' -e 's/[ \t\n]*$//')"
+          input_str=$(echo "${input_str}" | tr -d '\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
           echo $input_str
 
