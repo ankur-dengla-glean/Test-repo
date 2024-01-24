@@ -6,7 +6,7 @@ on:
 
 env:
   TRIGGER_COMMAND: "/trigger-workflow"
-  ALLOWED_WORKFLOWS: "pr_check"
+  ALLOWED_WORKFLOWS: '["pr_check"]'
 
 jobs:
   trigger_workflow:
@@ -31,9 +31,7 @@ jobs:
           echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
 
           # Check if the workflow is allowed to be triggered
-          IFS=',' read -ra ALLOWED_WORKFLOWS <<< "$ALLOWED_WORKFLOWS_ARRAY"
-
-          echo "${{contains(${ALLOWED_WORKFLOWS_ARRAY}, ${workflow_name})}}"
+          echo "${{contains(fromJson(ALLOWED_WORKFLOWS), workflow_name)}}"
 
           for ((i = 1; i < ${#args[@]}; i++)); do
               arg=${args[i]}
