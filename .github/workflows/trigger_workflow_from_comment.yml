@@ -49,7 +49,7 @@ jobs:
       - name: Trigger PR Check Workflow
         run: |
           echo "Triggering the PR Check workflow..."
-          echo ${{fromJson(steps.get-workflow-details.outputs)}}
+          echo "${{steps.get-workflow-details.outputs.workflow_name}}"
           # Trigger the PR Check workflow using repository_dispatch event
           # curl -L \
           #   -X POST \
