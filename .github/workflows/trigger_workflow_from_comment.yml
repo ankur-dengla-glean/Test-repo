@@ -27,18 +27,8 @@ jobs:
           command_params=${input_str#$TRIGGER_COMMAND}
           IFS=' ' read -ra args <<< $command_params
 
-          export workflow_name=${args[0]}
-          echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
-
-          echo 
-
-          # Check if the workflow is allowed to be triggered
-          if ${{ contains(fromJson(env.ALLOWED_WORKFLOWS), env.workflow_name) }}; then
-              echo "Contains"
-          else
-              echo "Does not contain"
-          fi
-          
+          workflow_name=${args[0]}
+          echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT          
 
           for ((i = 1; i < ${#args[@]}; i++)); do
               arg=${args[i]}
@@ -48,6 +38,17 @@ jobs:
                   echo "${key}=${arg}" >> $GITHUB_OUTPUT
               fi
           done
+
+      - name: Check Workflow
+        id: check-workflow
+        run: |
+          # Check if the workflow is allowed to be triggered
+          if ${{ contains(fromJson(env.ALLOWED_WORKFLOWS), steps.get-workflow-details.outputs.workflow_name) }}; then
+              echo "Contains"
+          else
+              echo "Does not contain"
+          fi
+
 
       - name: Get PR Details
         id: get-pr-details
