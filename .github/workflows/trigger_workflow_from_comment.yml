@@ -4,6 +4,10 @@ on:
     types:
       - created
 
+env:
+  TRIGGER_COMMAND: "/trigger-workflow"
+  ALLOWED_WORKFLOWS: '["pr_check"]'
+
 jobs:
   trigger_workflow:
     permissions:
@@ -11,10 +15,7 @@ jobs:
       checks: write
       contents: write
       pull-requests: read
-    env:
-      TRIGGER_COMMAND: "/trigger-workflow"
-      ALLOWED_WORKFLOWS: '["pr_check"]'
-    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, env.TRIGGER_COMMAND) }}
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, ${{ TRIGGER_COMMAND }}) }}
     runs-on: ubuntu-latest
     steps:
       - name: Get Workflow Details
