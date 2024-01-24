@@ -46,7 +46,7 @@ jobs:
           if ${{ contains(fromJson(env.ALLOWED_WORKFLOWS), steps.get-workflow-details.outputs.workflow_name) }}; then
               echo "Contains"
           else
-              echo "Does not contain"
+              exit 1
           fi
 
 
