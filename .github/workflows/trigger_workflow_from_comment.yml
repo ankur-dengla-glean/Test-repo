@@ -17,7 +17,7 @@ jobs:
       - name: Get Workflow Details from issue_comment
         id: get-workflow-details
         run: |
-          input_str="/trigger_workflow pr_check --arg1 2323 --arg2 23232323" 
+          input_str=${{ github.event.comment.body }}
           command_name="/trigger_workflow"
 
           # Remove the leading ‘\trigger-workflow ’
