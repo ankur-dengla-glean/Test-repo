@@ -4,9 +4,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.number}}
   cancel-in-progress: true
 on:
-  repository_dispatch:
-    types:  
-      - pr_check
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -28,7 +26,6 @@ env:
 jobs:
   analyze:
     name: PR comment
-    if: ${{ github.event.pull_request }}
     runs-on: ubuntu-latest
     steps:
       - run: echo A comment on PR 
