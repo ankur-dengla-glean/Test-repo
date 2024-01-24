@@ -6,6 +6,7 @@ on:
 
 env:
   TRIGGER_COMMAND: "/trigger-workflow"
+  # List of workflows allowed to be triggered via PR comment
   ALLOWED_WORKFLOWS: '["pr_check"]'
 
 jobs:
@@ -15,18 +16,20 @@ jobs:
       checks: write
       contents: write
       pull-requests: read
+    # Only run for PR comments
     if: ${{ github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
+        ## Get the details of the command and the workflow to trigger from the comment body
       - name: Get Workflow Details
         id: get-workflow-details
         run: |
           input_str="${{ github.event.comment.body }}"
 
-          # Remove the leading TRIGGER_COMMAND
+          # Get the first segment from the comment body. It should be the TRIGGER_COMMAND
           input_trigger_command=${input_str%% *}
 
-          # Check if the command is correct
+          # Check if the command is correct. If not, bailout
           if [[ $input_trigger_command == $TRIGGER_COMMAND ]]; then
               echo "The command is correct. Moving ahead."
           else
@@ -34,12 +37,17 @@ jobs:
               exit 1
           fi
 
+          # Remove the leading TRIGGER_COMMAND and get the workflow to trigger details
           command_params=${input_str#$TRIGGER_COMMAND}
-          IFS=' ' read -ra args <<< $command_params
+          IFS=' ' read -ra args <<< $command_params     # Convert string to space separated array
 
+          # The first element should be the workflow name. We extract it and push it to GITHUB_OUTPUT so we
+          # can use it in the subsequent steps
           workflow_name=${args[0]}
-          echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT          
+          echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
 
+          # Get the arguments passed to the command and export them in the form key=value to GITHUB_OUTPUT
+          # NOTE: Right now these are not used but can be extracted in the subsequent steps and used if needed
           for ((i = 1; i < ${#args[@]}; i++)); do
               arg=${args[i]}
               if [[ $arg == --* ]]; then
@@ -48,7 +56,7 @@ jobs:
                   echo "${key}=${arg}" >> $GITHUB_OUTPUT
               fi
           done
-
+        # Check if the workflow is allowed to be triggered via PR comment.
       - name: Check Workflow
         id: check-workflow
         run: |
@@ -59,23 +67,22 @@ jobs:
             echo "The workflow is not allowed to be triggered via PR comment. Aborting."
               exit 1
           fi
-
-
+        # We need the head of the branch from which the PR was raised to run the workflow
       - name: Get PR Details
         id: get-pr-details
-        run: | 
+        run: |
           PR_HEAD_BRANCH=$(curl -s \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}" \
             |jq -r .head.ref)
 
           echo "pr_head=${PR_HEAD_BRANCH}" >> $GITHUB_OUTPUT
-
+        # We finally trigger the workflow
       - name: Trigger PR Check Workflow
         run: |
           WORKFLOW_TO_TRIGGER="${{steps.get-workflow-details.outputs.workflow_name}}"
           echo "Triggering the ${WORKFLOW_TO_TRIGGER} workflow..."
-          
+
           curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
