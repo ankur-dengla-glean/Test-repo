@@ -15,25 +15,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get Workflow Details from issue_comment
-        id: get-workflow-details-from-comment
+        id: get-workflow-details
         run: |
-          input_str="${{ github.event.comment.body }}"
+          input_str="${{ github.event.comment.body }}" 
+
           # Remove the leading ‘\trigger-workflow ’
-          args=${input_str#*<}
-          workflow_name=${args%%>*}
-          args=${args#*> }
+          args=${input_str#* }
+          workflow_name=${args%% *}
+          args=${args#* }
+
+          echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
+
           # Split the remaining arguments
           for arg in $args; do
+              echo $arg
               if [[ $arg == --* ]]; then
                   key=${arg#--}
-                  declare $key=
               else
-                  declare $key=$arg
+                  echo "${key}=${arg}" >> $GITHUB_OUTPUT
               fi
           done
-          # Output the parsed values
-          echo “Workflow Name: $workflow_name”
-          echo “Arg1: $arg1"
+
       - name: Get PR Details
         id: get-pr-details
         run: | 
@@ -43,9 +45,11 @@ jobs:
             |jq -r .head.ref)
 
           echo "pr_head=${PR_HEAD_BRANCH}" >> $GITHUB_OUTPUT
+
       - name: Trigger PR Check Workflow
         run: |
           echo "Triggering the PR Check workflow..."
+          echo ${{fromJson(steps.get-workflow-details.outputs)}}
           # Trigger the PR Check workflow using repository_dispatch event
           # curl -L \
           #   -X POST \
