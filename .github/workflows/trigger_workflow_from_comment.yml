@@ -31,7 +31,11 @@ jobs:
           echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
 
           # Check if the workflow is allowed to be triggered
-          echo "${{ $workflow_name }}"
+          if [[ {{ contains(fromJson($ALLOWED_WORKFLOWS), $workflow_name) }} ]]; then
+                  echo "Contains"
+              else
+                  echo "Does not contain"
+              fi
           
 
           for ((i = 1; i < ${#args[@]}; i++)); do
