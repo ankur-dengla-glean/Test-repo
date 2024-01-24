@@ -31,9 +31,9 @@ jobs:
           echo "workflow_name=${workflow_name}" >> $GITHUB_OUTPUT
 
           # Check if the workflow is allowed to be triggered
-          IFS=',' read -ra MY_ARRAY_VALUES <<< "$ALLOWED_WORKFLOWS"
+          IFS=',' read -ra ALLOWED_WORKFLOWS <<< "$ALLOWED_WORKFLOWS_ARRAY"
 
-          echo "${{contains(${ALLOWED_WORKFLOWS}, ${workflow_name})}}"
+          echo "${{contains(${ALLOWED_WORKFLOWS_ARRAY}, ${workflow_name})}}"
 
           for ((i = 1; i < ${#args[@]}; i++)); do
               arg=${args[i]}
