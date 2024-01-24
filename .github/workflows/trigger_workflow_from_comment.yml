@@ -26,8 +26,6 @@ jobs:
         run: |
           input_str="${{ github.event.comment.body }}"
 
-          echo $input_str
-
           # Trim leading and trailing spaces, tabs, and newlines
           input_str=$(echo "${input_str}" | tr -d '\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
