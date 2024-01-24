@@ -15,10 +15,10 @@ jobs:
       checks: write
       contents: write
       pull-requests: read
-    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/trigger-workflow')
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, env.TRIGGER_COMMAND)
     runs-on: ubuntu-latest
     steps:
-      - name: Get Workflow Details from issue_comment
+      - name: Get Workflow Details
         id: get-workflow-details
         run: |
           input_str="${{ github.event.comment.body }}"
