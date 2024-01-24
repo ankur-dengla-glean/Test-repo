@@ -26,8 +26,12 @@ jobs:
         run: |
           input_str="${{ github.event.comment.body }}"
 
+          echo $input_str
+
           # Trim leading and trailing spaces, tabs, and newlines
           input_str="$(echo -e "${input_str}" | sed -e 's/^[ \t\n]*//' -e 's/[ \t\n]*$//')"
+
+          echo $input_str
 
           # Get the first segment from the comment body. It should be the TRIGGER_COMMAND
           input_trigger_command=${input_str%% *}
