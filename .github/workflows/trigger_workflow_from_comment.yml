@@ -18,7 +18,7 @@ jobs:
       pull-requests: read
     # Only run for PR comments. 
     # NOTE: We are NOT using TRIGGER_WORKFLOW env variable here as the env context is not available in if: condition
-    if: ${{ github.event.issue.pull_request.draft == false && contains(github.event.comment.body, "/trigger-workflow") }}
+    if: ${{ github.event.issue.pull_request.draft == false && contains(github.event.comment.body, '/trigger-workflow') }}
     runs-on: ubuntu-latest
     steps:
         ## Get the details of the command and the workflow to trigger from the comment body
