@@ -26,3 +26,4 @@ if  false ; then
       echo "Does not contain"
   fi
   
+echo "some changes"
