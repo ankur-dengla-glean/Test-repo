@@ -17,7 +17,7 @@ jobs:
       contents: write
       pull-requests: read
     # Only run for PR comments
-    if: ${{ github.event.issue.pull_request }}
+    if: ${{ github.event.issue.pull_request.draft == false && contains(github.event.comment.body, env.TRIGGER_COMMAND) }}
     runs-on: ubuntu-latest
     steps:
         ## Get the details of the command and the workflow to trigger from the comment body
@@ -39,7 +39,7 @@ jobs:
               echo "The command is correct. Moving ahead."
           else
             echo "The command is not valid. Aborting."
-              exit 1
+            exit 0
           fi
 
           # Remove the leading TRIGGER_COMMAND and get the workflow to trigger details
@@ -70,7 +70,7 @@ jobs:
               echo "The workflow is allowed. Moving ahead."
           else
             echo "The workflow is not allowed to be triggered via PR comment. Aborting."
-              exit 1
+            exit 0
           fi
         # We need the head of the branch from which the PR was raised to run the workflow
       - name: Get PR Details
